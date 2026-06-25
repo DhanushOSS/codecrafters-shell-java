@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    private static List<String> acceptedCommands = Arrays.asList("echo");
+    private static List<String> acceptedCommands = Arrays.asList("echo", "exit", "type");
 
     private static boolean checkCommand(String command){
         String coreCommand = splitInput(command)[0];
@@ -31,6 +31,12 @@ public class Main {
             String response = splitInput(command)[1]; 
             System.out.println(response);
             return;
+        }else if(coreCommand.equals("type")){
+            if(checkCommand(splitInput((command))[1])){
+                System.out.println(splitInput((command))[1] + " is a shell builtin");
+            }else{
+                System.out.println(splitInput((command))[1] + ": not found");       
+            }
         }
     }
 
