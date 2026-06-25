@@ -1,12 +1,40 @@
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
+    private static List<String> acceptedCommands = Arrays.asList("echo");
+
     private static boolean checkCommand(String command){
+        String coreCommand = splitInput(command)[0];
+        if(acceptedCommands.contains(coreCommand)){
+            return true;
+        }
         return false;
     }   
 
+    private static String[] splitInput(String command){
+        command = command.trim();
+        int inputIndex = command.indexOf(" ");
+        if (inputIndex == -1) {
+            return new String[] { command, "" };
+        }
+        String coreCommand = command.substring(0, inputIndex);
+        String restOfInput = command.substring(inputIndex + 1);
+
+        return new String[] { coreCommand, restOfInput };
+    }
+
+    private static void response(String command){
+        String coreCommand = command.trim().split(" ")[0];
+        if(coreCommand.equals("echo")){
+            String response = splitInput(command)[1]; 
+            System.out.println(response);
+            return;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        // TODO: Uncomment the code below to pass the first stage
         Scanner scanner = new Scanner(System.in);
         while(true){
             System.out.print("$ ");
@@ -15,6 +43,8 @@ public class Main {
             if(command.equals("exit")){break;}
             if (!checkCommand(command)) {
                 System.out.println(command + ": command not found");
+            }else{
+                response(command);
             }
             
         }
