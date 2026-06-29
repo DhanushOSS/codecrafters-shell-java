@@ -1,9 +1,10 @@
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.List;
+import java.io.File;
 
 public class Main {
-    private static List<String> acceptedCommands = Arrays.asList("echo", "exit", "type");
+    private static List<String> acceptedCommands = Arrays.asList("echo", "exit", "type", "grep");
 
     private static boolean checkCommand(String command){
         String coreCommand = splitInput(command)[0];
@@ -34,10 +35,31 @@ public class Main {
         }else if(coreCommand.equals("type")){
             if(checkCommand(splitInput((command))[1])){
                 System.out.println(splitInput((command))[1] + " is a shell builtin");
+            }else if(pathLocation(splitInput((command))[1]) != ""){
+                System.out.println(splitInput((command))[1] + " is " + pathLocation(splitInput((command))[1]));
             }else{
                 System.out.println(splitInput((command))[1] + ": not found");       
             }
         }
+    }
+
+    private static String pathLocation(String command){
+        String path = System.getenv("PATH");
+        if(path == null){
+            return "";
+        }
+        String[] directories = path.split(File.pathSeparator);
+        
+        for (String dir : directories) {
+
+            File candidate = new File(dir, command);
+
+            if (candidate.exists() && candidate.canExecute()) {
+                return candidate.getAbsolutePath();
+            }
+        }
+
+        return "";
     }
 
     public static void main(String[] args) throws Exception {
