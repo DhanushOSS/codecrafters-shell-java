@@ -1,8 +1,10 @@
 package builtins;
 
 import utils.*;
+import shell.ShellState;
 import java.util.Set;
 import java.util.HashSet;
+import java.io.File;
 
 
 public enum Builtin{
@@ -15,12 +17,13 @@ public enum Builtin{
     PWD("pwd"){
         @Override 
         public void run(String a) {
-            System.out.println(System.getProperty("user.dir"));
+            System.out.println(ShellState.cwd);
         }
     },
     EXIT("exit"){
         @Override
         public void run(String a) {
+            // 
         }
     },
     TYPE("type") {
@@ -31,6 +34,17 @@ public enum Builtin{
                 case CommandType.BUILTIN     -> System.out.println(name + " is a shell builtin");
                 case CommandType.EXECUTABLE  -> System.out.println(name + " is " + PathResolver.locate(name));
                 case CommandType.NONEXISTENT -> System.out.println(name + ": not found");
+            }
+        }
+    },
+    CD("cd"){
+        @Override
+        public void run(String a){
+            File candidate = new File(a);
+            if(candidate.isDirectory() && candidate.isAbsolute()){
+                ShellState.cwd = candidate;
+            }else{
+                System.out.println("cd: " + a +  ": No such file or directory");
             }
         }
     };
