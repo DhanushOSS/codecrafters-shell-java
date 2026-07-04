@@ -5,7 +5,7 @@ import shell.ShellState;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.File;
-
+import java.io.IOException;
 
 public enum Builtin{
     ECHO("echo"){
@@ -39,12 +39,18 @@ public enum Builtin{
     },
     CD("cd"){
         @Override
-        public void run(String a){
-            File candidate = new File(a);
-            if(candidate.isDirectory() && candidate.isAbsolute()){
-                ShellState.cwd = candidate;
-            }else{
-                System.out.println("cd: " + a +  ": No such file or directory");
+        public void run(String target){
+            File dest = target.startsWith("/") ? new File(target) : new File(ShellState.cwd, target);
+
+            try {
+                File canonical = dest.getCanonicalFile(); // auto-normalizes . and ..
+                if (canonical.isDirectory()) {
+                    ShellState.cwd = canonical; // valid dir → move there
+                } else {
+                    System.out.println("cd: " + target + ": No such file or directory");
+                }
+            } catch (IOException e) { // getCanonical* is checked
+                System.out.println("cd: " + target + ": No such file or directory");
             }
         }
     };
