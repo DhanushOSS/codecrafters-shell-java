@@ -40,6 +40,13 @@ public enum Builtin{
     CD("cd"){
         @Override
         public void run(String target){
+
+            if(target.equals("~")){
+                target = System.getenv("HOME");
+            }else if(target.startsWith("~/")){
+                target = System.getenv("HOME") + target.substring(2);
+            }
+
             File dest = target.startsWith("/") ? new File(target) : new File(ShellState.cwd, target);
 
             try {
